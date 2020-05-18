@@ -1,0 +1,17 @@
+﻿<Window x:Class="Denovo.EmployeeAdd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Denovo"
+        mc:Ignorable="d"
+        Title="Add New Employee" Height="170" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+    <Grid>
+        <Label Content="Employee Name:" Margin="20,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtEmployee" Height="26" Margin="151,25,40,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="1" LostKeyboardFocus="TxtEmployee_LostKeyboardFocus" GotKeyboardFocus="TxtEmployee_GotKeyboardFocus"/>
+        <Image x:Name="ImgEmployeeError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="439,30,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+        
+        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="2" Click="BtnDone_Click" FontSize="16"/>
+        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="3"/>
+    </Grid>
+</Window>

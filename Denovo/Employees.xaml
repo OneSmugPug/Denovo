@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="Denovo.Employees"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Denovo"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Background="#FFFAFAFA" Width="1106" Height="703" FontFamily="Lato" FontSize="16" Loaded="UserControl_Loaded">
+    <Grid>
+        <Label x:Name="LblHeader" Content="Employees" Margin="30,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="35" Foreground="#DD1878C6" FontWeight="Bold"/>
+
+        <Label x:Name="LblSeach" Content="Search:" Margin="30,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18"/>
+        <TextBox x:Name="TxtSearch" HorizontalAlignment="Left" Height="26" Margin="103,82,0,0" VerticalAlignment="Top" Width="270" TabIndex="1" ToolTip="Search employee." TextChanged="TxtSearch_TextChanged"/>
+
+        <DataGrid x:Name="DGEmployees" Margin="20,125,20,80" CanUserReorderColumns="False" IsReadOnly="True" SelectionMode="Single" ColumnWidth="*" FontSize="16">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Foreground" Value="#DD000000"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Foreground" Value="#DD000000"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+        </DataGrid>
+
+        <Button x:Name="BtnAdd" Content="Add" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="135" Height="40" FontSize="16" TabIndex="2" ToolTip="Add new employee." Click="BtnAdd_Click"/>
+    </Grid>
+</UserControl>
