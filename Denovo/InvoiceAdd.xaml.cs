@@ -36,8 +36,11 @@ namespace Denovo
             TxtInvoiceNumber.Focus();
             TxtValue.Text = "0.00";
             TxtCommDue.Text = "0.00";
-            TxtCommPerc.Text = "0%";
+            TxtCommPerc.Text = "11.00%";
+            commPerc = 0.11m;
             TxtValue.SelectionStart = TxtValue.Text.Length;
+
+            DtpDate.SelectedDate = DateTime.Now;
         }
 
         private void BtnDone_Click(object sender, RoutedEventArgs e)
@@ -55,7 +58,7 @@ namespace Denovo
                     else total = result * 0.6m;
                 }
 
-                owner.SetNewInvoice(TxtInvoiceNumber.Text, TxtValue.Text, commPerc.ToString("N2", nfi), TxtCommDue.Text, total.ToString("N2", nfi));
+                owner.SetNewInvoice(TxtInvoiceNumber.Text, TxtValue.Text, commPerc.ToString("N2", nfi), TxtCommDue.Text, total.ToString("N2", nfi), DtpDate.SelectedDate.Value);
                 DialogResult = true;
             }
         }

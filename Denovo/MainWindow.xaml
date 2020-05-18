@@ -32,6 +32,7 @@
         <Grid x:Name="Workspace" Margin="260,38,0,0"/>
 
         <Grid Height="33" Margin="260,0,0,0" VerticalAlignment="Top" MouseDown="TitleBar_MouseDown" Background="#FFFAFAFA">
+
             <Button x:Name="BtnWindowClose" Style="{StaticResource MaterialDesignFlatButton}" Width="46" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Click="BtnWindowClose_Click" >
                 <materialDesign:PackIcon Kind="WindowClose" />
             </Button>

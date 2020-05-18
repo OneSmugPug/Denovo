@@ -1,0 +1,21 @@
+﻿<Window x:Class="Denovo.PaymentAdd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Denovo"
+        mc:Ignorable="d"
+        Title="Add New Payment" Height="215" Width="332" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+    <Grid>
+        <Label Content="Amount (R):" Margin="20,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtValue" Height="26" Margin="116,75,0,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="2" TextChanged="TxtValue_TextChanged" HorizontalAlignment="Left" Width="150"/>
+        <Image x:Name="ImgValueError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="354,82,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+
+        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="4" Click="BtnDone_Click" FontSize="16"/>
+        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="5"/>
+
+        <DatePicker x:Name="DtpDate" Margin="116,25,0,0" VerticalAlignment="Top" FirstDayOfWeek="Monday" HorizontalAlignment="Left" Width="190"/>
+        <Label Content="Date:" Margin="65,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+
+    </Grid>
+</Window>

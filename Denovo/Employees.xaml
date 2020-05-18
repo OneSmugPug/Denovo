@@ -12,7 +12,7 @@
         <Label x:Name="LblSeach" Content="Search:" Margin="30,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18"/>
         <TextBox x:Name="TxtSearch" HorizontalAlignment="Left" Height="26" Margin="103,82,0,0" VerticalAlignment="Top" Width="270" TabIndex="1" ToolTip="Search employee." TextChanged="TxtSearch_TextChanged"/>
 
-        <DataGrid x:Name="DGEmployees" Margin="20,125,20,80" CanUserReorderColumns="False" IsReadOnly="True" SelectionMode="Single" ColumnWidth="*" FontSize="16">
+        <DataGrid x:Name="DGEmployees" Margin="20,125,20,80" CanUserReorderColumns="False" IsReadOnly="True" ColumnWidth="*" FontSize="16">
             <DataGrid.Resources>
                 <Style TargetType="DataGridRow">
                     <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
@@ -31,6 +31,7 @@
             </DataGrid.Resources>
         </DataGrid>
 
-        <Button x:Name="BtnAdd" Content="Add" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="135" Height="40" FontSize="16" TabIndex="2" ToolTip="Add new employee." Click="BtnAdd_Click"/>
+        <Button x:Name="BtnAdd" Content="Add" Margin="0,72,20,0" HorizontalAlignment="Right" Width="135" Height="40" FontSize="16" TabIndex="2" ToolTip="Add new employee." Click="BtnAdd_Click" VerticalAlignment="Top"/>
+        <Button x:Name="BtnOD" Content="Open Directory" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="157" Height="36" FontSize="16" IsCancel="True" TabIndex="5" Click="BtnOD_Click"/>
     </Grid>
 </UserControl>

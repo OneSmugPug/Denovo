@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Denovo"
         mc:Ignorable="d"
-        Title="Add New Employee" Height="312" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+        Title="Add New Invoice" Height="360" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
     <Grid>
         <Label Content="Invoice Number:" Margin="51,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="TxtInvoiceNumber" Height="26" Margin="179,25,40,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="1" LostKeyboardFocus="TxtInvoiceNumber_LostKeyboardFocus" GotKeyboardFocus="TxtInvoiceNumber_GotKeyboardFocus"/>
@@ -24,6 +24,8 @@
 
         <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="4" Click="BtnDone_Click" FontSize="16"/>
         <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="5"/>
+        <DatePicker x:Name="DtpDate" HorizontalAlignment="Left" Margin="179,225,0,0" VerticalAlignment="Top" Width="190" FirstDayOfWeek="Monday"/>
+        <Label Content="Date:" Margin="128,225,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
 
     </Grid>
 </Window>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -32,13 +34,14 @@ namespace Denovo
             value,
             commPerc,
             commDue,
-            total;
-
+            total,
+            date;
         private DataTable dt;
         private Window darkWindow;
         private static double windowMinHeight, windowMinWidth;
         private HwndSource hwndSource;
         private MainWindow owner;
+        private readonly NumberFormatInfo nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
 
         public Invoices()
         {
@@ -46,6 +49,7 @@ namespace Denovo
 
             windowMinHeight = MinHeight;
             windowMinWidth = MinWidth;
+            nfi.NumberDecimalDigits = 2;
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -57,6 +61,7 @@ namespace Denovo
                 File.Create(filePath);
 
                 dt = new DataTable();
+                dt.Columns.Add(new DataColumn("Date", typeof(string)));
                 dt.Columns.Add(new DataColumn("Invoice Number", typeof(string)));
                 dt.Columns.Add(new DataColumn("Value (R)", typeof(string)));
                 dt.Columns.Add(new DataColumn("Commission %", typeof(string)));
@@ -68,6 +73,7 @@ namespace Denovo
             else
             {
                 dt = new DataTable();
+                dt.Columns.Add(new DataColumn("Date", typeof(string)));
                 dt.Columns.Add(new DataColumn("Invoice Number", typeof(string)));
                 dt.Columns.Add(new DataColumn("Value (R)", typeof(string)));
                 dt.Columns.Add(new DataColumn("Commission %", typeof(string)));
@@ -75,6 +81,8 @@ namespace Denovo
                 dt.Columns.Add(new DataColumn("Total (R)", typeof(string)));
                 DGInvoice.ItemsSource = ReadFile();
             }
+
+            CalculateTotals();
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
@@ -91,21 +99,91 @@ namespace Denovo
             if ((bool)invAdd.ShowDialog())
             {
                 DataRow dr = dt.NewRow();
-                dr[0] = invNum;
-                dr[1] = value.Replace(',', ' ');
-                dr[2] = commPerc.Replace(',', ' ');
-                dr[3] = commDue.Replace(',', ' ');
-                dr[4] = total.Replace(',', ' ');
+                dr[0] = date;
+                dr[1] = invNum;
+                dr[2] = value.Replace(',', ' ');
+                dr[3] = commPerc.Replace(',', ' ');
+                dr[4] = commDue.Replace(',', ' ');
+                dr[5] = total.Replace(',', ' ');
                 dt.Rows.Add(dr);
 
                 DataView dv = new DataView(dt);
                 DGInvoice.ItemsSource = dv;
+
+                CalculateTotals();
 
                 WriteCSV();
             }
 
             darkWindow.Hide();
             ClearEffect(owner);
+        }
+
+        private void BtnPayment_Click(object sender, RoutedEventArgs e)
+        {
+            PaymentAdd payAdd = new PaymentAdd();
+            payAdd.SetOwner(this);
+
+            CreateDarkWindow();
+
+            ApplyEffect(owner);
+            darkWindow.Show();
+            SetDarkWindowPos();
+
+            if ((bool)payAdd.ShowDialog())
+            {
+                DataRow dr = dt.NewRow();
+                dr[0] = date;
+                dr[1] = "Payment";
+                dr[2] = "-";
+                dr[3] = "-";
+                dr[4] = "-";
+                dr[5] = total.Replace(',', ' ');
+                dt.Rows.Add(dr);
+
+                DataView dv = new DataView(dt);
+                DGInvoice.ItemsSource = dv;
+
+                CalculateTotals();
+
+                WriteCSV();
+            }
+
+            darkWindow.Hide();
+            ClearEffect(owner);
+        }
+
+        private void CalculateTotals()
+        {
+            decimal valueSum = 0m, commDueSum = 0m, totalSum = 0m;
+
+            foreach(DataRow row in dt.Rows)
+            {
+                if (decimal.TryParse(row["Value (R)"].ToString().Replace('.', ','), out decimal valueResult))
+                {
+                    valueSum += valueResult;
+                }
+
+                if (decimal.TryParse(row["Commission Due (R)"].ToString().Replace('.', ','), out decimal commDueResult))
+                {
+                    commDueSum += commDueResult;
+                }
+
+                if (decimal.TryParse(row["Total (R)"].ToString().Replace('.', ','), out decimal totalResult))
+                {
+                    totalSum += totalResult;
+                }
+            }
+
+            TxtValue.Text = valueSum.ToString("N2", nfi);
+            TxtCommDue.Text = commDueSum.ToString("N2", nfi);
+            TxtTotal.Text = totalSum.ToString("N2", nfi);
+        }
+
+        private void BtnOD_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(@"C:\CSVDatabase"))
+                Process.Start(@"C:\CSVDatabase");
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -149,6 +227,7 @@ namespace Denovo
                 dr[2] = split[2];
                 dr[3] = split[3];
                 dr[4] = split[4];
+                dr[5] = split[5];
 
                 dt.Rows.Add(dr);
             }
@@ -324,12 +403,19 @@ namespace Denovo
 
         public void SetOwner(MainWindow owner) => this.owner = owner;
 
-        public void SetNewInvoice(string invNum, string value, string commPerc, string commDue, string total)
+        public void SetNewInvoice(string invNum, string value, string commPerc, string commDue, string total, DateTime date)
         {
             this.invNum = invNum;
             this.value = value;
             this.commPerc = commPerc;
             this.commDue = commDue;
+            this.total = total;
+            this.date = date.Date.ToShortDateString();
+        }
+
+        public void SetNewPayment(DateTime date, string total)
+        {
+            this.date = date.Date.ToShortDateString();
             this.total = total;
         }
     }

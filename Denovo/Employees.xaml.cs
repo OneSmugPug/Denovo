@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,6 +28,7 @@ namespace Denovo
     /// </summary>
     public partial class Employees : UserControl
     {
+        private string directory = @"C:\CSVDatabase";
         private string filePath = @"C:\CSVDatabase\Employees.csv", newEmployeeName;
         private DataTable dt;
         private static double windowMinHeight, windowMinWidth;
@@ -44,6 +46,9 @@ namespace Denovo
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
             if (!File.Exists(filePath))
             {
                 File.Create(filePath);
@@ -88,15 +93,27 @@ namespace Denovo
             ClearEffect(owner);
         }
 
+        private void BtnOD_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(directory))
+                Process.Start(directory);
+        }
+
         private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var row = (DataRowView)DGEmployees.SelectedItem;
             owner.EmployeeSelected(row[0].ToString());
         }
 
+        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
         #region [Employees DataSource]
         public void WriteCSV()
         {
+            
             DGEmployees.SelectAllCells();
 
             DGEmployees.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
@@ -133,11 +150,6 @@ namespace Denovo
             return new DataView(dt);
         }
         #endregion
-
-        private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
 
         #region [Window Move & Resize]
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

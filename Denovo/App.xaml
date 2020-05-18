@@ -38,6 +38,16 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
+            <DrawingImage x:Key="back">
+                <DrawingImage.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Brush="#FF1878C6" Geometry="F1 M 21.0773,0.587997C 20.8173,0.587997 20.572,0.697334 20.3907,0.885338L 0.390666,20.8853C -1.27157e-006,21.276 -1.27157e-006,21.9107 0.390666,22.3013L 20.3907,42.3013C 20.64,42.5627 21.016,42.6667 21.364,42.572C 21.7187,42.484 21.9893,42.2133 22.0773,41.8587C 22.172,41.5107 22.068,41.1347 21.8067,40.8853L 2.516,21.5933L 21.8067,2.30133C 22.104,2.01067 22.1867,1.572 22.0307,1.19733C 21.8693,0.812004 21.4947,0.572002 21.0773,0.587997 Z "/>
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
             <DrawingImage x:Key="logo">
                 <DrawingImage.Drawing>
                     <DrawingGroup>
