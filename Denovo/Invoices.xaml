@@ -7,39 +7,29 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="#FFFAFAFA" Width="1106" Height="703" FontFamily="Lato" FontSize="16" Loaded="UserControl_Loaded">
     <Grid>
-        <Label x:Name="LblHeader" Content="Invoices: &lt;Employee&gt;" Margin="30,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="35" Foreground="#DD1878C6" FontWeight="Bold"/>
+        <Label x:Name="LblHeader" Content="Invoices" Margin="20,20,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="38" Foreground="{DynamicResource SecondaryAccentBrush}" FontWeight="Bold" FontFamily="Century"/>
 
-        <Label x:Name="LblSeach" Content="Search:" Margin="30,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18"/>
-        <TextBox x:Name="TxtSearch" HorizontalAlignment="Left" Height="26" Margin="103,82,0,0" VerticalAlignment="Top" Width="270" TabIndex="1" ToolTip="Search employee." TextChanged="TxtSearch_TextChanged"/>
-
-        <DataGrid x:Name="DGInvoice" Margin="20,125,20,80" CanUserReorderColumns="False" IsReadOnly="True" ColumnWidth="*" FontSize="16">
+        <DataGrid x:Name="DGInvoice" Margin="20,125,20,80" CanUserReorderColumns="False" IsReadOnly="True" ColumnWidth="*" FontSize="16" AutoGeneratingColumn="DGInvoice_AutoGeneratingColumn">
             <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGridRow}">
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
                     <Setter Property="Background" Value="Transparent"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
-                            <Setter Property="Foreground" Value="#DD000000"/>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
-                            <Setter Property="Foreground" Value="#DD000000"/>
-                        </Trigger>
-                    </Style.Triggers>
                 </Style>
             </DataGrid.Resources>
         </DataGrid>
 
-        <Button x:Name="BtnAdd" Content="Add Invoice" Margin="0,72,20,0" HorizontalAlignment="Right" Width="122" Height="36" FontSize="16" TabIndex="2" ToolTip="Add new invoice." Click="BtnAdd_Click" VerticalAlignment="Top"/>
-
-        <TextBox x:Name="TxtTotal" Margin="0,0,20,20" TextWrapping="Wrap" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" IsReadOnly="True"/>
-        <Label Content="Total (R):" Margin="0,0,175,18" FontSize="18" HorizontalAlignment="Right" Width="76" Height="30" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="TxtCommDue" Margin="0,0,285,20" TextWrapping="Wrap" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" IsReadOnly="True"/>
-        <Label Content="Commission Due (R):" Margin="0,0,440,18" FontSize="18" HorizontalAlignment="Right" Width="172" Height="30" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="TxtValue" Margin="0,0,644,20" TextWrapping="Wrap" Height="26" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="150" IsReadOnly="True"/>
-        <Label Content="Value (R):" Margin="0,0,799,18" FontSize="18" HorizontalAlignment="Right" Width="82" Height="30" VerticalAlignment="Bottom"/>
-        <Button x:Name="BtnPayment" Content="Add Payment" Margin="0,72,159,0" HorizontalAlignment="Right" Width="140" Height="36" FontSize="16" TabIndex="2" ToolTip="Add new payment." Click="BtnPayment_Click" VerticalAlignment="Top"/>
-        <Button x:Name="BtnOD" Content="Open Directory" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="157" Height="36" FontSize="16" IsCancel="True" TabIndex="5" Click="BtnOD_Click"/>
-
+        <Button x:Name="BtnAdd" Content="Add Invoice" Margin="0,72,20,0" HorizontalAlignment="Right" Width="122" Height="36" FontSize="16" TabIndex="2" ToolTip="Add new invoice." Click="BtnAdd_Click" VerticalAlignment="Top" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}"/>
+        <Button x:Name="BtnPayment" Content="Add Payment" Margin="0,72,164,0" HorizontalAlignment="Right" Width="134" Height="36" FontSize="16" TabIndex="2" ToolTip="Add new payment." Click="BtnPayment_Click" VerticalAlignment="Top" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}"/>
+        
+        <StackPanel x:Name="SpTotals" Margin="0,0,20,20" Height="40" VerticalAlignment="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Width="1004">
+            <Label Content="DF Amount (R):" Margin="0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="TxtDFAmount" Margin="5,8,0,5" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Width="115" IsReadOnly="True" FontSize="15"/>
+            <Label Content="Comm Due (R):" Margin="20,0,0,0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="TxtCommDue" Margin="5,3,0,0" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Width="115" IsReadOnly="True" FontSize="15"/>
+            <Label Content="Comp Comm (R):" Margin="20,0,0,0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="TxtCompComm" Margin="5,3,0,0" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Width="115" IsReadOnly="True" FontSize="15"/>
+            <Label Content="Pers Comm (R):" Margin="20,0,0,0" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="TxtPersonalComm" Margin="5,3,0,0" TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center" Width="115" IsReadOnly="True" FontSize="15"/>
+        </StackPanel>
     </Grid>
 </UserControl>

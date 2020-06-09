@@ -5,13 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Denovo"
         mc:Ignorable="d"
-        Title="Add New Employee" Height="170" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+        Title="Add New Employee" Height="325" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="True" Loaded="Window_Loaded">
     <Grid>
-        <Label Content="Employee Name:" Margin="20,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TxtEmployee" Height="26" Margin="151,25,40,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="1" LostKeyboardFocus="TxtEmployee_LostKeyboardFocus" GotKeyboardFocus="TxtEmployee_GotKeyboardFocus"/>
-        <Image x:Name="ImgEmployeeError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="439,30,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
-        
-        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="2" Click="BtnDone_Click" FontSize="16"/>
-        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="3"/>
+        <Label Content="Employee Code:" Margin="24,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtEmployeeCode" Height="26" Margin="151,25,153,0" TextWrapping="Wrap" VerticalAlignment="Top" IsTabStop="False" IsReadOnly="True"/>
+
+        <Label Content="Employee Name:" Margin="20,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtEmployee" Height="26" Margin="151,75,40,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="1" LostKeyboardFocus="TxtEmployee_LostKeyboardFocus" GotKeyboardFocus="TxtEmployee_GotKeyboardFocus"/>
+        <Image x:Name="ImgEmployeeError" Source="{StaticResource ResourceKey=error}" HorizontalAlignment="Left" Height="15" Margin="439,81,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+
+        <Label Content="Password:" Margin="67,125,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtPassword" Height="26" Margin="151,125,123,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="2" LostKeyboardFocus="TxtPassword_LostKeyboardFocus" GotKeyboardFocus="TxtPassword_GotKeyboardFocus"/>
+        <Image x:Name="ImgPasswordError" Source="{StaticResource ResourceKey=error}" HorizontalAlignment="Left" Height="15" Margin="356,131,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+
+        <Label Content="Access Level:" Margin="46,175,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <ComboBox x:Name="CbAccessLevel" HorizontalAlignment="Left" Margin="151,174,0,0" VerticalAlignment="Top" Width="283" TabIndex="3"/>
+
+        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="4" Click="BtnDone_Click" FontSize="16" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}"/>
+        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="5" Foreground="{DynamicResource SecondaryAccentBrush}"/>
     </Grid>
 </Window>

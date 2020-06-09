@@ -6,10 +6,10 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:Denovo"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280" Background="#FFFAFAFA" WindowStyle="None" MinHeight="720" MinWidth="1280" FontFamily="Lato" FontSize="16" ResizeMode="CanResizeWithGrip" AllowsTransparency="True" Loaded="Window_Loaded">
+        Title="MainWindow" Height="768" Width="1366" Background="#FFFAFAFA" WindowStyle="None" MinHeight="768" MinWidth="1366" FontFamily="Lato" FontSize="16" ResizeMode="CanResizeWithGrip" AllowsTransparency="True" Loaded="Window_Loaded" StateChanged="Main_StateChanged">
     <Window.Resources>
         <Style x:Key="buttonHover" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="#FF1878c6"/>
+            <Setter Property="Background" Value="#FF898989"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -19,7 +19,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF125c99"/>
+                                <Setter Property="Background" Value="#FF5F5F5F"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -29,35 +29,66 @@
     </Window.Resources>
 
     <Grid>
-        <Grid x:Name="Workspace" Margin="260,38,0,0"/>
+        <Grid x:Name="Workspace" Margin="260,38,0,0">
+
+        </Grid>
 
         <Grid Height="33" Margin="260,0,0,0" VerticalAlignment="Top" MouseDown="TitleBar_MouseDown" Background="#FFFAFAFA">
 
             <Button x:Name="BtnWindowClose" Style="{StaticResource MaterialDesignFlatButton}" Width="46" Height="33" HorizontalAlignment="Right" VerticalAlignment="Top" Click="BtnWindowClose_Click" >
-                <materialDesign:PackIcon Kind="WindowClose" />
+                <materialDesign:PackIcon Kind="WindowClose" Foreground="{DynamicResource SecondaryAccentBrush}"/>
             </Button>
             <Button x:Name="BtnWindowMaximize" Style="{StaticResource MaterialDesignFlatButton}" Width="46" Height="33" Margin="0,0,46,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnWindowMaximize_Click" >
-                <materialDesign:PackIcon Kind="WindowMaximize" />
+                <materialDesign:PackIcon Kind="WindowMaximize" Foreground="{DynamicResource SecondaryAccentBrush}"/>
             </Button>
             <Button x:Name="BtnWindowMinimize" Style="{StaticResource MaterialDesignFlatButton}" Width="46" Height="33" Margin="0,0,92,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="BtnWindowMinimize_Click" >
-                <materialDesign:PackIcon Kind="WindowMinimize" />
+                <materialDesign:PackIcon Kind="WindowMinimize" Foreground="{DynamicResource SecondaryAccentBrush}" />
             </Button>
             <Button x:Name="BtnWindowRestore" Style="{StaticResource MaterialDesignFlatButton}" Width="46" Height="33" Margin="0,0,46,0" VerticalAlignment="Top" HorizontalAlignment="Right"  Visibility="Hidden" Click="BtnWindowRestore_Click" >
-                <materialDesign:PackIcon Kind="WindowRestore" />
+                <materialDesign:PackIcon Kind="WindowRestore" Foreground="{DynamicResource SecondaryAccentBrush}" />
             </Button>
         </Grid>
 
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ShadowAssist.ShadowEdges="Right" HorizontalAlignment="Left" Width="260" Background="#FF1878C6">
-            <Image HorizontalAlignment="Center" Height="107" VerticalAlignment="Top" Width="200" Source="{StaticResource logo}" Stretch="Fill" Margin="30,47,30,0"/>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth4" materialDesign:ShadowAssist.ShadowEdges="Right" HorizontalAlignment="Left" Width="260" Background="#FF898989">
+            <Image HorizontalAlignment="Center" Height="122" VerticalAlignment="Top" Width="200" Source="{StaticResource logo}" Stretch="Fill" Margin="30,38,30,0"/>
         </materialDesign:Card>
 
-        <StackPanel HorizontalAlignment="Left" Height="520" Margin="0,200,0,0" VerticalAlignment="Top" Width="260">
+        <StackPanel HorizontalAlignment="Left" Margin="0,200,0,0" Width="260">
+            <Button x:Name="BtnLogin" Style="{StaticResource buttonHover}" Height="65" Width="260" Foreground="#FFFAFAFA" VerticalAlignment="Top" HorizontalAlignment="Center" Cursor="Hand" Click="BtnLogin_Click">
+                <StackPanel Width="241" Orientation="Horizontal">
+                    <Image x:Name="ImgLogin" Source="{StaticResource login}" Stretch="Fill" Margin="48,0,0,0" Height="22" Width="22" />
+                    <TextBlock x:Name="TbLogin" Height="24" Width="150" Margin="15,4,0,0" FontSize="20" FontFamily="Lato" Text="Login" FontWeight="Light"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="BtnInvoices" Style="{StaticResource buttonHover}" Height="65" Width="260" Foreground="#FFFAFAFA" VerticalAlignment="Top" HorizontalAlignment="Center" Cursor="Hand" Click="BtnInvoices_Click">
+                <StackPanel Width="241" Orientation="Horizontal">
+                    <Image Source="{StaticResource invoice}" Stretch="Fill" Margin="48,0,0,0" Height="22" Width="22" />
+                    <TextBlock Height="24" Width="150" Margin="15,4,0,0" FontSize="20" FontFamily="Lato" Text="Invoices" FontWeight="Light"/>
+                </StackPanel>
+            </Button>
+            <Button x:Name="BtnExpenses" Style="{StaticResource buttonHover}" Height="65" Width="260" Foreground="#FFFAFAFA" VerticalAlignment="Top" HorizontalAlignment="Center" Cursor="Hand" Click="BtnExpenses_Click">
+                <StackPanel Width="241" Orientation="Horizontal">
+                    <Image Source="{StaticResource expense}" Stretch="Fill" Margin="48,0,0,0" Height="22" Width="22" />
+                    <TextBlock Height="24" Width="150" Margin="15,4,0,0" FontSize="20" FontFamily="Lato" Text="Expenses" FontWeight="Light"/>
+                </StackPanel>
+            </Button>
             <Button x:Name="BtnEmployees" Style="{StaticResource buttonHover}" Height="65" Width="260" Foreground="#FFFAFAFA" VerticalAlignment="Top" HorizontalAlignment="Center" Cursor="Hand" Click="BtnEmployees_Click">
                 <StackPanel Width="241" Orientation="Horizontal">
-                    <Image Source="{StaticResource staff}" Stretch="Fill" Margin="45,0,0,0" Height="20" Width="28" />
+                    <Image Source="{StaticResource staff}" Stretch="Fill" Margin="48,0,0,0" Height="22" Width="22" />
                     <TextBlock Height="24" Width="150" Margin="15,4,0,0" FontSize="20" FontFamily="Lato" Text="Employees" FontWeight="Light"/>
                 </StackPanel>
             </Button>
+            <Button x:Name="BtnClients" Style="{StaticResource buttonHover}" Height="65" Width="260" Foreground="#FFFAFAFA" VerticalAlignment="Top" HorizontalAlignment="Center" Cursor="Hand" Click="BtnClients_Click">
+                <StackPanel Width="241" Orientation="Horizontal">
+                    <Image Source="{StaticResource client}" Stretch="Fill" Margin="48,0,0,0" Height="22" Width="22" />
+                    <TextBlock Height="24" Width="150" Margin="15,4,0,0" FontSize="20" FontFamily="Lato" Text="Clients" FontWeight="Light"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
+
+        <Grid HorizontalAlignment="Left" Width="260" Height="113" VerticalAlignment="Bottom">
+            <Label x:Name="LblWelcome" Content="Welcome:" HorizontalAlignment="Center" Margin="91,29,91,0" VerticalAlignment="Top" Foreground="#FFFAFAFA"/>
+            <Label x:Name="LblName" HorizontalAlignment="Center" Margin="37,50,37,0" VerticalAlignment="Top" Foreground="#FFFAFAFA" FontFamily="Century" FontSize="24" HorizontalContentAlignment="Center" RenderTransformOrigin="0.5,0.5"/>
+        </Grid>
     </Grid>
 </Window>

@@ -25,10 +25,16 @@ namespace Denovo
     {
         private static double windowMinHeight, windowMinWidth;
         private HwndSource hwndSource;
+        private User USER;
+        private bool isLoggedIn = false;
 
+        #region [Windows Load]
         public MainWindow()
         {
             InitializeComponent();
+
+            LblWelcome.Visibility = Visibility.Hidden;
+            LblName.Visibility = Visibility.Hidden;
 
             windowMinHeight = MinHeight;
             windowMinWidth = MinWidth;
@@ -43,15 +49,84 @@ namespace Denovo
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            BtnInvoices.Visibility = Visibility.Hidden;
+            BtnExpenses.Visibility = Visibility.Hidden;
+            BtnEmployees.Visibility = Visibility.Hidden;
+            BtnClients.Visibility = Visibility.Hidden;
+
             WindowState = WindowState.Maximized;
-            BtnEmployees.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            BtnLogin.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
+        #endregion
 
         #region [Navigation Tab Button Click Events]
+        private void BtnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            ClearButtonBackgrounds();
+            BtnLogin.Background = new SolidColorBrush(Color.FromRgb(95, 95, 95));
+            Workspace.Children.Clear();
+
+            if (isLoggedIn)
+            {
+                TbLogin.Text = "Login";
+                ImgLogin.Source = Application.Current.TryFindResource("login") as DrawingImage;
+
+                BtnInvoices.Visibility = Visibility.Hidden;
+                BtnExpenses.Visibility = Visibility.Hidden;
+                BtnEmployees.Visibility = Visibility.Hidden;
+                BtnClients.Visibility = Visibility.Hidden;
+
+                LblWelcome.Visibility = Visibility.Hidden;
+                LblName.Visibility = Visibility.Hidden;
+            }
+
+            Login login = new Login
+            {
+                Height = double.NaN,
+                Width = double.NaN
+            };
+            login.SetOwner(this);
+
+            Workspace.Children.Add(login);
+        }
+
+        private void BtnInvoices_Click(object sender, RoutedEventArgs e)
+        {
+            ClearButtonBackgrounds();
+            BtnInvoices.Background = new SolidColorBrush(Color.FromRgb(95, 95, 95));
+            Workspace.Children.Clear();
+
+            Invoices inv = new Invoices
+            {
+                Height = double.NaN,
+                Width = double.NaN
+            };
+            inv.SetUser(USER);
+            inv.SetOwner(this);
+
+            Workspace.Children.Add(inv);
+        }
+
+        private void BtnExpenses_Click(object sender, RoutedEventArgs e)
+        {
+            ClearButtonBackgrounds();
+            BtnExpenses.Background = new SolidColorBrush(Color.FromRgb(95, 95, 95));
+            Workspace.Children.Clear();
+
+            Expenses exp = new Expenses
+            {
+                Height = double.NaN,
+                Width = double.NaN
+            };
+            exp.SetOwner(this);
+
+            Workspace.Children.Add(exp);
+        }
+
         private void BtnEmployees_Click(object sender, RoutedEventArgs e)
         {
             ClearButtonBackgrounds();
-            BtnEmployees.Background = new SolidColorBrush(Color.FromRgb(18, 92, 153));
+            BtnEmployees.Background = new SolidColorBrush(Color.FromRgb(95, 95, 95));
             Workspace.Children.Clear();
 
             Employees emp = new Employees
@@ -64,13 +139,33 @@ namespace Denovo
             Workspace.Children.Add(emp);
         }
 
+        private void BtnClients_Click(object sender, RoutedEventArgs e)
+        {
+            ClearButtonBackgrounds();
+            BtnClients.Background = new SolidColorBrush(Color.FromRgb(95, 95, 95));
+            Workspace.Children.Clear();
+
+            Clients cli = new Clients
+            {
+                Height = double.NaN,
+                Width = double.NaN,
+            };
+            cli.SetOwner(this);
+
+            Workspace.Children.Add(cli);
+        }
+
         private void ClearButtonBackgrounds()
         {
+            BtnLogin.ClearValue(BackgroundProperty);
+            BtnInvoices.ClearValue(BackgroundProperty);
+            BtnExpenses.ClearValue(BackgroundProperty);
             BtnEmployees.ClearValue(BackgroundProperty);
+            BtnClients.ClearValue(BackgroundProperty);
         }
         #endregion
 
-        public void EmployeeSelected(string name)
+        public void EmployeeSelected(string selectedEmpCode)
         {
             Workspace.Children.Clear();
 
@@ -80,9 +175,37 @@ namespace Denovo
                 Width = double.NaN
             };
             inv.SetOwner(this);
-            inv.SetEmployee(name);
+            inv.SetSelectedEmployee(selectedEmpCode);
+            inv.SetUser(USER);
 
             Workspace.Children.Add(inv);
+        }
+
+        public void LoginSuccessful(User USER)
+        {
+            this.USER = USER;
+
+            TbLogin.Text = "Logout";
+            ImgLogin.Source = Application.Current.TryFindResource("logout") as DrawingImage;
+            isLoggedIn = true;
+
+            if (USER.GetAccessLevel() == 1)
+            {
+                BtnInvoices.Visibility = Visibility.Visible;
+            }
+            else if (USER.GetAccessLevel() == 2)
+            {
+                BtnInvoices.Visibility = Visibility.Visible;
+                BtnExpenses.Visibility = Visibility.Visible;
+                BtnEmployees.Visibility = Visibility.Visible;
+                BtnClients.Visibility = Visibility.Visible;
+            }
+
+            LblName.Content = USER.GetName();
+            LblWelcome.Visibility = Visibility.Visible;
+            LblName.Visibility = Visibility.Visible;
+
+            BtnInvoices.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
         #region [Window Move & Resize]

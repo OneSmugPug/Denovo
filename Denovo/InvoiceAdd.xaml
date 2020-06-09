@@ -5,27 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Denovo"
         mc:Ignorable="d"
-        Title="Add New Invoice" Height="360" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+        Title="Add New Invoice" Height="555" Width="480" Background="#FFFAFAFA" WindowStartupLocation="CenterScreen" FontFamily="Lato" FontSize="16" WindowStyle="ToolWindow" ResizeMode="NoResize" ShowInTaskbar="True" Loaded="Window_Loaded">
     <Grid>
-        <Label Content="Invoice Number:" Margin="51,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TxtInvoiceNumber" Height="26" Margin="179,25,40,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="1" LostKeyboardFocus="TxtInvoiceNumber_LostKeyboardFocus" GotKeyboardFocus="TxtInvoiceNumber_GotKeyboardFocus"/>
-        <Image x:Name="ImgInvNumError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="439,30,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+        <Label Content="Client:" Margin="121,25,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <ComboBox x:Name="CbClient" Margin="179,21,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="275" TabIndex="1" SelectionChanged="CbClient_SelectionChanged"/>
 
-        <Label Content="Value (R):" Margin="101,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TxtValue" Height="26" Margin="179,75,125,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="2" TextChanged="TxtValue_TextChanged"/>
-        <Image x:Name="ImgValueError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="354,82,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+        <Label Content="Invoice Number:" Margin="51,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtInvoiceNumber" Height="26" Margin="179,75,40,0" TextWrapping="Wrap" VerticalAlignment="Top" IsTabStop="False" IsReadOnly="True"/>
+        <Image x:Name="ImgInvNumError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="438,81,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden" RenderTransformOrigin="0.133,0.556"/>
 
-        <Label Content="Commission %:" Margin="60,125,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TxtCommPerc" Height="26" Margin="179,125,195,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="3" LostKeyboardFocus="TxtCommPerc_LostKeyboardFocus" GotKeyboardFocus="TxtCommPerc_GotKeyboardFocus"/>
-        <Image x:Name="ImgCommPercError" Source="{StaticResource ResourceKey=error}"  HorizontalAlignment="Left" Height="15" Margin="284,132,0,0" VerticalAlignment="Top" Width="15" Visibility="Hidden"/>
+        <Label Content="Bill Amount (R):" Margin="58,125,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtBillAmount" Height="26" Margin="179,125,125,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="3" TextChanged="TxtBillAmount_TextChanged" LostKeyboardFocus="TxtBillAmount_LostKeyboardFocus" PreviewKeyDown="TxtBillAmount_PreviewKeyDown"/>
 
-        <Label Content="Commission Due (R):" Margin="20,175,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TxtCommDue" Height="26" Margin="179,175,125,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" IsTabStop="False"/>
+        <Label Content="Drawing Fee:" Margin="73,175,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtDrawingFee" Height="26" Margin="179,175,195,0" TextWrapping="Wrap" VerticalAlignment="Top" TabIndex="4" LostKeyboardFocus="TxtDrawingFee_LostKeyboardFocus" TextChanged="TxtDrawingFee_TextChanged" PreviewKeyDown="TxtDrawingFee_PreviewKeyDown"/>
+        <Label Content="%" Margin="280,175,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
 
-        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="4" Click="BtnDone_Click" FontSize="16"/>
-        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="5"/>
-        <DatePicker x:Name="DtpDate" HorizontalAlignment="Left" Margin="179,225,0,0" VerticalAlignment="Top" Width="190" FirstDayOfWeek="Monday"/>
-        <Label Content="Date:" Margin="128,225,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <Label Content="DF Amount (R):" Margin="58,225,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtDFAmount" Height="26" Margin="179,225,125,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" IsTabStop="False"/>
+
+        <Label Content="Commission Due (R):" Margin="20,275,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="TxtCommDue" Height="26" Margin="179,275,125,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" IsTabStop="False"/>
+
+        <DatePicker x:Name="DtpDate" HorizontalAlignment="Left" Margin="179,325,0,0" VerticalAlignment="Top" Width="215" FirstDayOfWeek="Monday" TabIndex="4"/>
+        <Label Content="Date:" Margin="128,325,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
+
+        <CheckBox x:Name="CbFinalized" Content="Finalized" HorizontalAlignment="Left" Margin="179,375,0,0" VerticalAlignment="Top" Foreground="#DD000000" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}" TabIndex="5" Checked="CbFinalized_Checked"/>
+        <CheckBox x:Name="CbPaid" Content="Paid" HorizontalAlignment="Left" Margin="179,425,0,0" VerticalAlignment="Top" Foreground="#DD000000" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}" TabIndex="6"/>
+
+        <Button x:Name="BtnDone" Content="Done" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="132" Height="36" TabIndex="7" Click="BtnDone_Click" FontSize="16" Background="{DynamicResource SecondaryAccentBrush}" BorderBrush="{DynamicResource SecondaryAccentBrush}"/>
+        <Button x:Name="BtnCancel" Content="Cancel" Style="{StaticResource MaterialDesignFlatButton}" Margin="20,0,0,20" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="132" Height="36" FontSize="16" IsCancel="True" TabIndex="8" Foreground="{DynamicResource SecondaryAccentBrush}"/>
+        
 
     </Grid>
 </Window>

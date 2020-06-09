@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -27,21 +28,15 @@ namespace Denovo
     /// </summary>
     public partial class Invoices : UserControl
     {
-        private string 
-            employeeName, 
-            filePath = @"C:\CSVDatabase",
-            invNum,
-            value,
-            commPerc,
-            commDue,
-            total,
-            date;
+        private string selectedEmpCode = string.Empty;
+        private bool isFirst = true;
         private DataTable dt;
         private Window darkWindow;
         private static double windowMinHeight, windowMinWidth;
         private HwndSource hwndSource;
         private MainWindow owner;
         private readonly NumberFormatInfo nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+        private User USER;
 
         public Invoices()
         {
@@ -54,41 +49,84 @@ namespace Denovo
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            LblHeader.Content = "Invoices: " + employeeName;
+            LblHeader.Content = "Invoices";
 
-            if (!File.Exists(filePath))
+            if (USER.GetAccessLevel() == 1)
             {
-                File.Create(filePath);
+                BtnPayment.Visibility = Visibility.Hidden;
+                SpTotals.Children.RemoveAt(7);
+                SpTotals.Children.RemoveAt(6);
+                SpTotals.Children.RemoveAt(5);
+                SpTotals.Children.RemoveAt(4);
+                SpTotals.Width = double.NaN;
+            }
+            else if (USER.GetAccessLevel() == 2)
+            {
+                if (selectedEmpCode.Equals(string.Empty))
+                {
+                    BtnPayment.Visibility = Visibility.Hidden;
+                    SpTotals.Children.RemoveAt(7);
+                    SpTotals.Children.RemoveAt(6);
+                    SpTotals.Width = double.NaN;
+                }
+            }
 
-                dt = new DataTable();
-                dt.Columns.Add(new DataColumn("Date", typeof(string)));
-                dt.Columns.Add(new DataColumn("Invoice Number", typeof(string)));
-                dt.Columns.Add(new DataColumn("Value (R)", typeof(string)));
-                dt.Columns.Add(new DataColumn("Commission %", typeof(string)));
-                dt.Columns.Add(new DataColumn("Commission Due (R)", typeof(string)));
-                dt.Columns.Add(new DataColumn("Total (R)", typeof(string)));
-                DataView dv = new DataView(dt);
-                DGInvoice.ItemsSource = dv;
-            }
-            else
-            {
-                dt = new DataTable();
-                dt.Columns.Add(new DataColumn("Date", typeof(string)));
-                dt.Columns.Add(new DataColumn("Invoice Number", typeof(string)));
-                dt.Columns.Add(new DataColumn("Value (R)", typeof(string)));
-                dt.Columns.Add(new DataColumn("Commission %", typeof(string)));
-                dt.Columns.Add(new DataColumn("Commission Due (R)", typeof(string)));
-                dt.Columns.Add(new DataColumn("Total (R)", typeof(string)));
-                DGInvoice.ItemsSource = ReadFile();
-            }
+            LoadInvoices();
 
             CalculateTotals();
+        }
+
+        private void LoadInvoices()
+        {
+            try
+            {
+                using (var conn = DBUtils.GetDBConnection())
+                {
+                    conn.Open();
+
+                    var sql = string.Empty;
+
+                    if (USER.GetAccessLevel() == 1)
+                    {
+                        sql = "SELECT Date, Client, [Invoice Number], [Bill Amount (R)], [Drawing Fee (%)], [DF Amount (R)], [Commission Due (R)], Finalized, Paid FROM Invoices WHERE "
+                            + "Code = '" + USER.GetCode() + "'";
+                    }
+                    else if (USER.GetAccessLevel() == 2)
+                    {
+                        if (!selectedEmpCode.Equals(string.Empty))
+                        {
+                            sql = "SELECT Date, Client, [Invoice Number], [Bill Amount (R)], [Drawing Fee (%)], [DF Amount (R)], [Commission Due (R)], [Company Comm (R)], [Personal Comm (R)], "
+                                + "Finalized, Paid FROM Invoices WHERE " + "Code = '" + selectedEmpCode + "'";
+                        }
+                        else
+                        {
+                            sql = "SELECT Date, Client, [Invoice Number], [Bill Amount (R)], [Drawing Fee (%)], [DF Amount (R)], [Commission Due (R)], [Company Comm (R)], [Personal Comm (R)], "
+                                + "Finalized, Paid FROM Invoices";
+                        }
+                    }
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(sql, conn))
+                    {
+                        dt = new DataTable();
+                        da.Fill(dt);
+                    }
+
+                    DGInvoice.ItemsSource = dt.DefaultView;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             InvoiceAdd invAdd = new InvoiceAdd();
-            invAdd.SetOwner(this);
+            invAdd.SetUser(USER);
+
+            if (!selectedEmpCode.Equals(string.Empty))
+                invAdd.SetSelectedEmployee(selectedEmpCode);
 
             CreateDarkWindow();
 
@@ -98,21 +136,49 @@ namespace Denovo
 
             if ((bool)invAdd.ShowDialog())
             {
-                DataRow dr = dt.NewRow();
-                dr[0] = date;
-                dr[1] = invNum;
-                dr[2] = value.Replace(',', ' ');
-                dr[3] = commPerc.Replace(',', ' ');
-                dr[4] = commDue.Replace(',', ' ');
-                dr[5] = total.Replace(',', ' ');
-                dt.Rows.Add(dr);
-
-                DataView dv = new DataView(dt);
-                DGInvoice.ItemsSource = dv;
-
+                LoadInvoices();
+                isFirst = true;
                 CalculateTotals();
+            }
 
-                WriteCSV();
+            darkWindow.Hide();
+            ClearEffect(owner);
+        }
+
+        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var row = (DataRowView)DGInvoice.SelectedItem;
+
+            CreateDarkWindow();
+
+            ApplyEffect(owner);
+            darkWindow.Show();
+            SetDarkWindowPos();
+
+            if (!row[2].ToString().StartsWith("P"))
+            {
+                InvoiceEdit invEdit = new InvoiceEdit();
+                invEdit.SetUser(USER);
+                invEdit.SetSelectedEmployee(selectedEmpCode);
+                invEdit.SetSelectedInv(row[2].ToString());
+
+                if ((bool)invEdit.ShowDialog())
+                {
+                    LoadInvoices();
+                    isFirst = true;
+                    CalculateTotals();
+                }
+            }
+            else
+            {
+                PaymentEdit payEdit = new PaymentEdit();
+                payEdit.SetSelectedPayment(row[2].ToString());
+
+                if ((bool)payEdit.ShowDialog())
+                {
+                    LoadInvoices();
+                    CalculateTotals();
+                }
             }
 
             darkWindow.Hide();
@@ -122,7 +188,10 @@ namespace Denovo
         private void BtnPayment_Click(object sender, RoutedEventArgs e)
         {
             PaymentAdd payAdd = new PaymentAdd();
-            payAdd.SetOwner(this);
+            payAdd.SetUser(USER);
+
+            if (!selectedEmpCode.Equals(string.Empty))
+                payAdd.SetSelectedEmployee(selectedEmpCode);
 
             CreateDarkWindow();
 
@@ -132,21 +201,9 @@ namespace Denovo
 
             if ((bool)payAdd.ShowDialog())
             {
-                DataRow dr = dt.NewRow();
-                dr[0] = date;
-                dr[1] = "Payment";
-                dr[2] = "-";
-                dr[3] = "-";
-                dr[4] = "-";
-                dr[5] = total.Replace(',', ' ');
-                dt.Rows.Add(dr);
-
-                DataView dv = new DataView(dt);
-                DGInvoice.ItemsSource = dv;
-
+                LoadInvoices();
+                isFirst = true;
                 CalculateTotals();
-
-                WriteCSV();
             }
 
             darkWindow.Hide();
@@ -155,86 +212,92 @@ namespace Denovo
 
         private void CalculateTotals()
         {
-            decimal valueSum = 0m, commDueSum = 0m, totalSum = 0m;
+            decimal dfAmountSum = 0m, commDueSum = 0m, compCommSum = 0m, persCommSum = 0m;
 
-            foreach(DataRow row in dt.Rows)
+            foreach (DataRow row in dt.Rows)
             {
-                if (decimal.TryParse(row["Value (R)"].ToString().Replace('.', ','), out decimal valueResult))
+                if (!isFirst)
                 {
-                    valueSum += valueResult;
+                    if (row["Paid"].ToString().Equals("No"))
+                    {
+                        if (decimal.TryParse(row["DF Amount (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal valueResult))
+                        {
+                            valueResult /= 100;
+                            dfAmountSum += valueResult;
+                        }
+                    }
+                    else if (row["Paid"].ToString().Equals("Yes"))
+                    {
+                        if (decimal.TryParse(row["DF Amount (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal valueResult))
+                        {
+                            valueResult /= 100;
+                            dfAmountSum -= valueResult;
+                        }
+                    }
                 }
-
-                if (decimal.TryParse(row["Commission Due (R)"].ToString().Replace('.', ','), out decimal commDueResult))
+                else
                 {
+                    if (row["Paid"].ToString().Equals("No"))
+                    {
+                        if (decimal.TryParse(row["DF Amount (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal valueResult))
+                        {
+                            valueResult /= 100;
+                            dfAmountSum += valueResult;
+                        }
+                    }
+                    else if (row["Paid"].ToString().Equals("Yes"))
+                    {
+                        dfAmountSum -= 0.00m;
+                    }
+
+                    isFirst = false;
+                }
+                
+
+                if (decimal.TryParse(row["Commission Due (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal commDueResult))
+                {
+                    commDueResult /= 100;
                     commDueSum += commDueResult;
                 }
 
-                if (decimal.TryParse(row["Total (R)"].ToString().Replace('.', ','), out decimal totalResult))
+                TxtDFAmount.Text = dfAmountSum.ToString("N2", nfi);
+                TxtCommDue.Text = commDueSum.ToString("N2", nfi);
+
+                if (USER.GetAccessLevel() == 2)
                 {
-                    totalSum += totalResult;
+
+                    if (decimal.TryParse(row["Company Comm (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal compCommResult))
+                    {
+                        compCommResult /= 100;
+                        compCommSum += compCommResult;
+                    }
+
+                    if (!selectedEmpCode.Equals(string.Empty))
+                    {
+                        if (decimal.TryParse(row["Personal Comm (R)"].ToString().Replace(".", "").Replace(",", "").TrimStart('0'), out decimal persCommResult))
+                        {
+                            persCommResult /= 100;
+                            persCommSum += persCommResult;
+                        }
+
+                        TxtPersonalComm.Text = persCommSum.ToString("N2", nfi);
+                    }
+
+                    TxtCompComm.Text = compCommSum.ToString("N2", nfi);
                 }
             }
-
-            TxtValue.Text = valueSum.ToString("N2", nfi);
-            TxtCommDue.Text = commDueSum.ToString("N2", nfi);
-            TxtTotal.Text = totalSum.ToString("N2", nfi);
         }
 
-        private void BtnOD_Click(object sender, RoutedEventArgs e)
+        private void DGInvoice_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (Directory.Exists(@"C:\CSVDatabase"))
-                Process.Start(@"C:\CSVDatabase");
+            if (e.PropertyType == typeof(DateTime))
+                (e.Column as DataGridTextColumn).Binding.StringFormat = "dd/MM/yyyy";
         }
 
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
 
         }
-
-        #region [Employees DataSource]
-        public void WriteCSV()
-        {
-            DGInvoice.SelectAllCells();
-
-            DGInvoice.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-            ApplicationCommands.Copy.Execute(null, DGInvoice);
-
-            DGInvoice.UnselectAllCells();
-            string result = (string)Clipboard.GetData(DataFormats.CommaSeparatedValue);
-
-            if (!File.Exists(filePath))
-                File.AppendAllText(filePath, result, UnicodeEncoding.UTF8);
-            else
-            {
-                File.Delete(filePath);
-                File.AppendAllText(filePath, result, UnicodeEncoding.UTF8);
-            }
-        }
-
-        public DataView ReadFile()
-        {
-            var lines = File.ReadAllLines(filePath);
-            DataRow dr;
-
-            foreach (string l in lines.Skip(1))
-            {
-                string[] split = l.Split(',');
-
-                dr = dt.NewRow();
-
-                dr[0] = split[0];
-                dr[1] = split[1];
-                dr[2] = split[2];
-                dr[3] = split[3];
-                dr[4] = split[4];
-                dr[5] = split[5];
-
-                dt.Rows.Add(dr);
-            }
-
-            return new DataView(dt);
-        }
-        #endregion
 
         #region [Window Move & Resize]
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -395,28 +458,10 @@ namespace Denovo
         }
         #endregion
 
-        public void SetEmployee(string name)
-        {
-            employeeName = name;
-            filePath += @"\" + name + "_Invoices.csv";
-        }
-
         public void SetOwner(MainWindow owner) => this.owner = owner;
 
-        public void SetNewInvoice(string invNum, string value, string commPerc, string commDue, string total, DateTime date)
-        {
-            this.invNum = invNum;
-            this.value = value;
-            this.commPerc = commPerc;
-            this.commDue = commDue;
-            this.total = total;
-            this.date = date.Date.ToShortDateString();
-        }
+        public void SetUser(User USER) => this.USER = USER;
 
-        public void SetNewPayment(DateTime date, string total)
-        {
-            this.date = date.Date.ToShortDateString();
-            this.total = total;
-        }
+        public void SetSelectedEmployee(string selectedEmpCode) => this.selectedEmpCode = selectedEmpCode;
     }
 }

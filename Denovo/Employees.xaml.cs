@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,8 +29,6 @@ namespace Denovo
     /// </summary>
     public partial class Employees : UserControl
     {
-        private string directory = @"C:\CSVDatabase";
-        private string filePath = @"C:\CSVDatabase\Employees.csv", newEmployeeName;
         private DataTable dt;
         private static double windowMinHeight, windowMinWidth;
         private HwndSource hwndSource;
@@ -46,30 +45,35 @@ namespace Denovo
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            LoadEmployees();
+        }
 
-            if (!File.Exists(filePath))
+        private void LoadEmployees()
+        {
+            try
             {
-                File.Create(filePath);
+                using (SqlConnection conn = DBUtils.GetDBConnection())
+                {
+                    conn.Open();
 
-                dt = new DataTable();
-                dt.Columns.Add(new DataColumn("Employee Name", typeof(string)));
-                DataView dv = new DataView(dt);
-                DGEmployees.ItemsSource = dv;
+                    using (var da = new SqlDataAdapter("SELECT Code, Name FROM Employees", conn))
+                    {
+                        dt = new DataTable();
+                        da.Fill(dt);
+                    }
+
+                    DGEmployees.ItemsSource = dt.DefaultView;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                dt = new DataTable();
-                dt.Columns.Add(new DataColumn("Employee Name", typeof(string)));
-                DGEmployees.ItemsSource = ReadFile();
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             EmployeeAdd empAdd = new EmployeeAdd();
-            empAdd.SetOwner(this);
 
             CreateDarkWindow();
 
@@ -79,24 +83,37 @@ namespace Denovo
 
             if ((bool)empAdd.ShowDialog())
             {
-                DataRow dr = dt.NewRow();
-                dr[0] = newEmployeeName;
-                dt.Rows.Add(dr);
-
-                DataView dv = new DataView(dt);
-                DGEmployees.ItemsSource = dv;
-
-                WriteCSV();
+                LoadEmployees();
             }
 
             darkWindow.Hide();
             ClearEffect(owner);
         }
 
-        private void BtnOD_Click(object sender, RoutedEventArgs e)
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(directory))
-                Process.Start(directory);
+            if (DGEmployees.SelectedItem != null)
+            {
+                var row = (DataRowView)DGEmployees.SelectedItem;
+
+                EmployeeEdit empEdit = new EmployeeEdit();
+                empEdit.SetSelectedEmployee(row[0].ToString());
+
+                CreateDarkWindow();
+
+                ApplyEffect(owner);
+                darkWindow.Show();
+                SetDarkWindowPos();
+
+                if ((bool)empEdit.ShowDialog())
+                {
+                    LoadEmployees();
+                }
+
+                darkWindow.Hide();
+                ClearEffect(owner);
+            }
+            else MessageBox.Show("Please select an employee.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -109,47 +126,6 @@ namespace Denovo
         {
 
         }
-
-        #region [Employees DataSource]
-        public void WriteCSV()
-        {
-            
-            DGEmployees.SelectAllCells();
-
-            DGEmployees.ClipboardCopyMode = DataGridClipboardCopyMode.IncludeHeader;
-            ApplicationCommands.Copy.Execute(null, DGEmployees);
-
-            DGEmployees.UnselectAllCells();
-
-            string result = (string)Clipboard.GetData(DataFormats.CommaSeparatedValue);
-
-            if (!File.Exists(filePath))
-                File.AppendAllText(filePath, result, UnicodeEncoding.UTF8);
-            else
-            {
-                File.Delete(filePath);
-                File.AppendAllText(filePath, result, UnicodeEncoding.UTF8);
-            }
-        }
-
-        public DataView ReadFile()
-        {
-            var lines = File.ReadAllLines(filePath);
-            DataRow dr;
-
-            foreach (string l in lines.Skip(1))
-            {
-                string[] split = l.Split(';');
-
-                dr = dt.NewRow();
-                dr[0] = split[0];
-
-                dt.Rows.Add(dr);
-            }
-
-            return new DataView(dt);
-        }
-        #endregion
 
         #region [Window Move & Resize]
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -311,10 +287,5 @@ namespace Denovo
         #endregion
 
         public void SetOwner(MainWindow owner) => this.owner = owner;
-
-        public void SetNewEmployeeName(string employeeName)
-        {
-            newEmployeeName = employeeName;
-        }
     }
 }
